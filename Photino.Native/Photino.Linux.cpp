@@ -647,15 +647,17 @@ void Photino::Show()
 
 		WebKitUserScript* script = webkit_user_script_new(
 			"window.__receiveMessageCallbacks = [];"
-			"window.__dispatchMessageCallback = function(message) {"
-			"	window.__receiveMessageCallbacks.forEach(function(callback) { callback(message); });"
+			"window.__dispatchMessageCallback = (message) => {"
+			"	window.__receiveMessageCallbacks.forEach((callback) => callback(message));"
 			"};"
+			""
 			"window.external = {"
-			"	sendMessage: function(message) {"
+			"	sendMessage: (message) => {"
 			"		window.webkit.messageHandlers.Photinointerop.postMessage(message);"
 			"	},"
-			"	receiveMessage: function(callback) {"
+			"	receiveMessage: (callback) => {"
 			"		window.__receiveMessageCallbacks.push(callback);"
+			"		return () => window.__receiveMessageCallbacks.splice(callback);"
 			"	}"
 			"};", WEBKIT_USER_CONTENT_INJECT_ALL_FRAMES, WEBKIT_USER_SCRIPT_INJECT_AT_DOCUMENT_START, NULL, NULL);
 		webkit_user_content_manager_add_script(contentManager, script);

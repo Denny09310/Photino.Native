@@ -748,7 +748,7 @@ void Photino::AttachWebView()
 						Settings->put_IsWebMessageEnabled(TRUE);
 
 						EventRegistrationToken webMessageToken;
-						_webviewWindow->AddScriptToExecuteOnDocumentCreated(L"window.external = { sendMessage: function(message) { window.chrome.webview.postMessage(message); }, receiveMessage: function(callback) { window.chrome.webview.addEventListener(\'message\', function(e) { callback(e.data); }); } };", nullptr);
+						_webviewWindow->AddScriptToExecuteOnDocumentCreated(L"window.external = { sendMessage: (message) => { window.chrome.webview.postMessage(message); }, receiveMessage: (callback) => { const callbackAction = (e) => callback(e.data); window.chrome.webview.addEventListener(\'message\', callbackAction); return () => window.chrome.webview.removeEventListener(\'message\', callbackAction); }, };", nullptr);
 						_webviewWindow->add_WebMessageReceived(Callback<ICoreWebView2WebMessageReceivedEventHandler>(
 							[&](ICoreWebView2* webview, ICoreWebView2WebMessageReceivedEventArgs* args) -> HRESULT {
 								wil::unique_cotaskmem_string message;
